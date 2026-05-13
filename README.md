@@ -100,3 +100,4 @@ Proje canlıya alınırken şu adımları takip edin:
 - `DEPLOY.md` dosyasındaki adımları uygulayın.
 - `frontend/.env.example` dosyasını kendi backend URL'inize göre kullanın.
 - `backend/data/raw_data.csv` veya `backend/data/raw_data.xlsx` dosyasının repoda olduğundan emin olun.
+# bestseller-projesi
