@@ -192,6 +192,12 @@ function onStarImgError(e) {
   e.target.src = PLACEHOLDER_IMG
 }
 
+function imgUrl(path) {
+  if (!path) return PLACEHOLDER_IMG
+  if (path.startsWith('http')) return path
+  return API_BASE + path
+}
+
 function formatNum(v, suffix = '') {
   if (v === null || v === undefined || Number.isNaN(Number(v))) return '—'
   return `${Number(v).toLocaleString('tr-TR')}${suffix}`
@@ -223,9 +229,12 @@ function onImgError(e) {
   <div class="flex h-screen transition-colors duration-500" :class="isDarkMode ? 'bg-[#0b0f19] text-slate-200' : 'bg-slate-50 text-slate-800'">
     <!-- Sidebar -->
     <aside class="hidden w-64 shrink-0 flex-col border-r py-6 px-5 lg:flex transition-colors duration-500" :class="isDarkMode ? 'border-white/10 bg-[#070a12]' : 'border-slate-200 bg-white shadow-sm'">
-      <div class="mb-10">
-        <p class="text-[11px] font-bold uppercase tracking-[0.3em]" :class="isDarkMode ? 'text-sky-500/80' : 'text-sky-600'">Analitik</p>
-        <p class="mt-1 text-xl font-bold tracking-tight" :class="isDarkMode ? 'text-white' : 'text-slate-900'">BI DASHBOARD</p>
+      <div class="mb-6">
+        <!-- Sporthink Logo -->
+        <img src="/sporthink-logo.png" alt="Sporthink" class="h-20 w-auto object-contain transition-all duration-300 -ml-1"
+          :style="isDarkMode ? 'filter: brightness(0) invert(1)' : ''" />
+        <p class="text-[10px] font-bold uppercase tracking-[0.2em] leading-none -mt-0.5" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">B&amp;W Seller</p>
+        <p class="text-lg font-bold tracking-tight leading-snug" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Dashboard</p>
       </div>
       <nav class="flex flex-col gap-2 text-sm">
         <button 
@@ -299,8 +308,9 @@ function onImgError(e) {
           <!-- ══════════════════ ANALYTICS PAGE ══════════════════ -->
           <div v-show="navActive === 'analytics'" class="space-y-8">
 
-            <!-- Page header + filters row -->
-            <div class="flex flex-col gap-5 rounded-2xl border p-5" :class="isDarkMode ? 'border-white/8 bg-[#0e1320]' : 'border-slate-200 bg-white shadow-sm'">
+            <!-- Page header + filters row — STICKY -->
+            <div class="sticky top-0 z-20 flex flex-col gap-5 rounded-2xl border p-5 backdrop-blur-xl"
+              :class="isDarkMode ? 'border-white/10 bg-[#0b0f19]/92' : 'border-slate-200/80 bg-white/92 shadow-md'">
               <div class="flex items-start justify-between gap-4 flex-wrap">
                 <div>
                   <p class="text-[10px] font-bold uppercase tracking-[0.25em] mb-1" :class="isDarkMode ? 'text-violet-500/80' : 'text-violet-500'">Analitik Merkez</p>
@@ -392,7 +402,7 @@ function onImgError(e) {
                     <!-- Rank badge -->
                     <div class="relative">
                       <div class="h-28 w-full rounded-lg bg-white overflow-hidden flex items-center justify-center">
-                        <img :src="p.gorsel_link || PLACEHOLDER_IMG" @error="onStarImgError" class="h-full w-full object-contain" :alt="p.stok_aciklama" />
+                        <img :src="imgUrl(p.gorsel_link)" @error="onStarImgError" class="h-full w-full object-contain" :alt="p.stok_aciklama" />
                       </div>
                       <span class="absolute top-1.5 left-1.5 h-5 w-5 rounded-full flex items-center justify-center text-[9px] font-black shadow"
                         :class="i === 0 ? 'bg-amber-400 text-amber-900' : i === 1 ? 'bg-slate-300 text-slate-700' : i === 2 ? 'bg-amber-700 text-amber-100' : (isDarkMode ? 'bg-white/10 text-slate-400' : 'bg-slate-100 text-slate-500')">
@@ -682,7 +692,7 @@ function onImgError(e) {
                           <td class="px-4 py-3.5">
                             <a :href="item.product_url || '#'" target="_blank" rel="noopener noreferrer" class="inline-block">
                               <div class="h-36 w-36 rounded-lg bg-white overflow-hidden ring-1 transition group-hover:scale-110" :class="isDarkMode ? 'ring-white/10' : 'ring-slate-200'">
-                                <img :src="item.gorsel_link || PLACEHOLDER_IMG" @error="onImgError" class="h-full w-full object-contain" alt="product" />
+                                <img :src="imgUrl(item.gorsel_link)" @error="onImgError" class="h-full w-full object-contain" alt="product" />
                               </div>
                             </a>
                           </td>
@@ -799,7 +809,7 @@ function onImgError(e) {
                           <td class="px-4 py-3.5">
                             <a :href="item.product_url || '#'" target="_blank" rel="noopener noreferrer" class="inline-block">
                               <div class="h-36 w-36 rounded-lg bg-white overflow-hidden ring-1 transition group-hover:scale-110" :class="isDarkMode ? 'ring-white/10' : 'ring-slate-200'">
-                                <img :src="item.gorsel_link || PLACEHOLDER_IMG" @error="onImgError" class="h-full w-full object-contain" alt="product" />
+                                <img :src="imgUrl(item.gorsel_link)" @error="onImgError" class="h-full w-full object-contain" alt="product" />
                               </div>
                             </a>
                           </td>
