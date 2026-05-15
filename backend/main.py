@@ -2048,10 +2048,14 @@ def analytics_summary(
     else:
         star_df = star_df.sort_values("Satış Miktarı", ascending=False).head(8)
 
-    top_products = []
-    for _, row in star_df.iterrows():
+    def _build_product_card(row):
         sku = str(row.get("Stok Kodu", ""))
-        top_products.append({
+        gmroi_val = row.get("gmroi") if "gmroi" in row.index else None
+        try:
+            gmroi_num = round(float(gmroi_val), 2) if gmroi_val is not None and not pd.isna(gmroi_val) else None
+        except (ValueError, TypeError):
+            gmroi_num = None
+        return {
             "stok_kodu": sku,
             "stok_aciklama": str(row.get("Stok Açıklama", row.get("Stok Aciklama", ""))),
             "marka": str(row.get("Marka Açıklama", row.get("Marka Aciklama", ""))),
@@ -2061,8 +2065,27 @@ def analytics_summary(
             "kar": round(float(row.get("brut_kar", 0) or 0), 2) if "brut_kar" in row.index else 0.0,
             "st_pct": round(float(row.get("sell_through_pct", 0) or 0), 1),
             "dss": int(row.get("DSS Miktar", 0) or 0),
+            "gmroi": gmroi_num,
             "gorsel_link": f"/api/image/{sku}" if sku else "",
-        })
+        }
+
+    top_products = [_build_product_card(row) for _, row in star_df.iterrows()]
+
+    # Risk Ürünleri (worst sellers): DSS > 0 ve düşük sell-through
+    worst_df = df[df["DSS Miktar"].fillna(0) > 0].copy()
+    if "E-TİCARET RENK" in worst_df.columns:
+        worst_df["E-TİCARET RENK"] = worst_df["E-TİCARET RENK"].fillna("").astype(str).str.strip()
+        worst_df = worst_df[(worst_df["E-TİCARET RENK"] != "") & (worst_df["E-TİCARET RENK"] != "999 - BOŞ")]
+    if "sell_through_pct" in worst_df.columns:
+        worst_df = worst_df.sort_values(
+            ["sell_through_pct", "DSS Miktar"],
+            ascending=[True, False],
+            na_position="last",
+        ).head(8)
+    else:
+        worst_df = worst_df.sort_values("DSS Miktar", ascending=False).head(8)
+
+    worst_products = [_build_product_card(row) for _, row in worst_df.iterrows()]
 
     return {
         "summary": {
@@ -2074,6 +2097,7 @@ def analytics_summary(
             "toplam_dss": round(total_dss),
         },
         "top_products": top_products,
+        "worst_products": worst_products,
         "by_brand": by_brand,
         "by_kategori": by_kategori,
         "by_anagrup": by_anagrup,

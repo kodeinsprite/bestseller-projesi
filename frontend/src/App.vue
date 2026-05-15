@@ -217,6 +217,11 @@ function formatMu(v) {
   return `${Number(v).toLocaleString('tr-TR', { maximumFractionDigits: 4, minimumFractionDigits: 4 })}x`
 }
 
+function formatGmroi(v) {
+  if (v === null || v === undefined || Number.isNaN(Number(v))) return '—'
+  return `${Number(v).toLocaleString('tr-TR', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}x`
+}
+
 const PLACEHOLDER_IMG = 'https://placehold.co/300x300/0b0f19/334155?text=No+Image'
 
 function onImgError(e) {
@@ -397,9 +402,8 @@ function onImgError(e) {
                 </div>
                 <div class="flex gap-3 overflow-x-auto pb-2 snap-x">
                   <div v-for="(p, i) in analyticsData.top_products" :key="p.stok_kodu"
-                    class="snap-start shrink-0 w-36 rounded-xl border p-3 space-y-2 transition hover:scale-[1.03] cursor-pointer"
+                    class="snap-start shrink-0 w-40 rounded-xl border p-3 space-y-2 transition hover:scale-[1.03] cursor-pointer"
                     :class="isDarkMode ? 'border-white/8 bg-[#0f141f]/80 hover:border-amber-500/40' : 'border-slate-200 bg-white hover:border-amber-400'">
-                    <!-- Rank badge -->
                     <div class="relative">
                       <div class="h-28 w-full rounded-lg bg-white overflow-hidden flex items-center justify-center">
                         <img :src="imgUrl(p.gorsel_link)" @error="onStarImgError" class="h-full w-full object-contain" :alt="p.stok_aciklama" />
@@ -408,14 +412,76 @@ function onImgError(e) {
                         :class="i === 0 ? 'bg-amber-400 text-amber-900' : i === 1 ? 'bg-slate-300 text-slate-700' : i === 2 ? 'bg-amber-700 text-amber-100' : (isDarkMode ? 'bg-white/10 text-slate-400' : 'bg-slate-100 text-slate-500')">
                         {{ i + 1 }}
                       </span>
-                      <span class="absolute top-1.5 right-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-black" :class="isDarkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'">%{{ p.st_pct }}</span>
                     </div>
-                    <div class="space-y-0.5">
+                    <div class="space-y-1">
                       <p class="text-[10px] font-mono font-bold leading-none" :class="isDarkMode ? 'text-sky-400' : 'text-sky-600'">{{ p.stok_kodu }}</p>
-                      <p class="text-[10px] font-medium leading-tight line-clamp-2" :class="isDarkMode ? 'text-slate-300' : 'text-slate-700'">{{ p.stok_aciklama || p.marka }}</p>
-                      <div class="flex items-center justify-between pt-1">
-                        <span class="text-[9px]" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">{{ formatNum(p.satis) }} sat.</span>
-                        <span class="text-[9px] font-bold" :class="isDarkMode ? 'text-emerald-400' : 'text-emerald-600'">{{ formatMoney(p.kar) }}</span>
+                      <p class="text-[10px] font-medium leading-tight line-clamp-2 min-h-[24px]" :class="isDarkMode ? 'text-slate-300' : 'text-slate-700'">{{ p.stok_aciklama || p.marka }}</p>
+                      <!-- Metrics grid -->
+                      <div class="grid grid-cols-2 gap-1 pt-1.5 border-t" :class="isDarkMode ? 'border-white/5' : 'border-slate-100'">
+                        <div>
+                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Satış</p>
+                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-slate-200' : 'text-slate-800'">{{ formatNum(p.satis) }}</p>
+                        </div>
+                        <div>
+                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Sat. Oranı</p>
+                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-emerald-400' : 'text-emerald-600'">%{{ p.st_pct }}</p>
+                        </div>
+                        <div>
+                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">GMROI</p>
+                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-violet-300' : 'text-violet-600'">{{ formatGmroi(p.gmroi) }}</p>
+                        </div>
+                        <div>
+                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Kar</p>
+                          <p class="text-[10px] font-bold tabular-nums truncate" :class="isDarkMode ? 'text-amber-300' : 'text-amber-600'">{{ formatMoney(p.kar) }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ⚠️ Risk Ürünleri (Worstseller) -->
+              <div v-if="analyticsData.worst_products && analyticsData.worst_products.length" class="rounded-2xl border p-5 space-y-4" :class="isDarkMode ? 'border-rose-500/20 bg-gradient-to-br from-rose-900/10 to-transparent' : 'border-rose-200 bg-rose-50/40'">
+                <div class="flex items-center gap-2">
+                  <span class="text-lg">⚠️</span>
+                  <div>
+                    <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-rose-300' : 'text-rose-700'">Risk Ürünleri</h3>
+                    <p class="text-[10px] uppercase tracking-wider font-semibold" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">En Düşük Sell-Through — Yüksek Stok Riski</p>
+                  </div>
+                </div>
+                <div class="flex gap-3 overflow-x-auto pb-2 snap-x">
+                  <div v-for="(p, i) in analyticsData.worst_products" :key="p.stok_kodu"
+                    class="snap-start shrink-0 w-40 rounded-xl border p-3 space-y-2 transition hover:scale-[1.03] cursor-pointer"
+                    :class="isDarkMode ? 'border-white/8 bg-[#0f141f]/80 hover:border-rose-500/40' : 'border-slate-200 bg-white hover:border-rose-400'">
+                    <div class="relative">
+                      <div class="h-28 w-full rounded-lg bg-white overflow-hidden flex items-center justify-center">
+                        <img :src="imgUrl(p.gorsel_link)" @error="onStarImgError" class="h-full w-full object-contain" :alt="p.stok_aciklama" />
+                      </div>
+                      <span class="absolute top-1.5 left-1.5 h-5 w-5 rounded-full flex items-center justify-center text-[9px] font-black shadow"
+                        :class="isDarkMode ? 'bg-rose-500/80 text-white' : 'bg-rose-500 text-white'">
+                        {{ i + 1 }}
+                      </span>
+                    </div>
+                    <div class="space-y-1">
+                      <p class="text-[10px] font-mono font-bold leading-none" :class="isDarkMode ? 'text-sky-400' : 'text-sky-600'">{{ p.stok_kodu }}</p>
+                      <p class="text-[10px] font-medium leading-tight line-clamp-2 min-h-[24px]" :class="isDarkMode ? 'text-slate-300' : 'text-slate-700'">{{ p.stok_aciklama || p.marka }}</p>
+                      <div class="grid grid-cols-2 gap-1 pt-1.5 border-t" :class="isDarkMode ? 'border-white/5' : 'border-slate-100'">
+                        <div>
+                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Satış</p>
+                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-slate-200' : 'text-slate-800'">{{ formatNum(p.satis) }}</p>
+                        </div>
+                        <div>
+                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Stok</p>
+                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-rose-300' : 'text-rose-600'">{{ formatNum(p.dss) }}</p>
+                        </div>
+                        <div>
+                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Sat. Oranı</p>
+                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-rose-300' : 'text-rose-600'">%{{ p.st_pct }}</p>
+                        </div>
+                        <div>
+                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">GMROI</p>
+                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-violet-300' : 'text-violet-600'">{{ formatGmroi(p.gmroi) }}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -683,6 +749,7 @@ function onImgError(e) {
                           <th class="px-4 py-3.5 text-right">Ciro</th>
                           <th class="px-4 py-3.5 text-right font-bold" :class="isDarkMode ? 'text-emerald-400' : 'text-emerald-600'">Satış Oranı</th>
                           <th class="px-4 py-3.5 text-right">Mark-Up</th>
+                          <th class="px-4 py-3.5 text-right font-semibold" :class="isDarkMode ? 'text-violet-300' : 'text-violet-600'">GMROI</th>
                           <th class="px-4 py-3.5 text-right font-semibold" :class="isDarkMode ? 'text-emerald-300' : 'text-emerald-600'">Kar</th>
                         </tr>
                       </thead>
@@ -705,6 +772,7 @@ function onImgError(e) {
                           <td class="px-4 py-3.5 text-right tabular-nums" :class="isDarkMode ? 'text-slate-300' : 'text-slate-600'">{{ formatMoney(item.satis_tutari) }}</td>
                           <td class="px-4 py-3.5 text-right tabular-nums font-bold" :class="isDarkMode ? 'text-emerald-400 bg-emerald-500/5' : 'text-emerald-600 bg-emerald-50/50'">{{ formatPct(item.sell_through_pct) }}</td>
                           <td class="px-4 py-3.5 text-right tabular-nums" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">{{ formatMu(item.mu) }}</td>
+                          <td class="px-4 py-3.5 text-right tabular-nums font-semibold" :class="isDarkMode ? 'text-violet-300' : 'text-violet-600'">{{ formatGmroi(item.gmroi) }}</td>
                           <td class="px-4 py-3.5 text-right tabular-nums font-semibold" :class="isDarkMode ? 'text-emerald-300' : 'text-emerald-600'">{{ formatMoney(item.toplam_kar) }}</td>
                         </tr>
                       </tbody>
@@ -799,7 +867,8 @@ function onImgError(e) {
                           <th class="px-4 py-3.5 text-right font-bold" :class="isDarkMode ? 'text-rose-300' : 'text-rose-600'">Dönem Sonu Stok</th>
                           <th class="px-4 py-3.5 text-right">Satış Adedi</th>
                           <th class="px-4 py-3.5 text-right">Satış Oranı</th>
-                          <th class="px-4 py-3.5 text-right">Stok Kapasitesi</th>
+                          <th class="px-4 py-3.5 text-right">Cover</th>
+                          <th class="px-4 py-3.5 text-right font-semibold" :class="isDarkMode ? 'text-violet-300' : 'text-violet-600'">GMROI</th>
                           <th class="px-4 py-3.5 text-right font-semibold" :class="isDarkMode ? 'text-rose-200' : 'text-rose-600'">Kar</th>
                         </tr>
                       </thead>
@@ -824,6 +893,7 @@ function onImgError(e) {
                           <td class="px-4 py-3.5 text-right tabular-nums font-medium" :class="item.periyot_cover_19 >= 100 ? (isDarkMode ? 'text-rose-400' : 'text-rose-600') : (isDarkMode ? 'text-slate-500' : 'text-slate-400')">
                             {{ item.periyot_cover_19 === 1000 ? '∞' : formatNum(item.periyot_cover_19) }}
                           </td>
+                          <td class="px-4 py-3.5 text-right tabular-nums font-semibold" :class="isDarkMode ? 'text-violet-300' : 'text-violet-600'">{{ formatGmroi(item.gmroi) }}</td>
                           <td class="px-4 py-3.5 text-right tabular-nums font-semibold" :class="isDarkMode ? 'text-rose-200' : 'text-rose-600'">{{ formatMoney(item.toplam_kar) }}</td>
                         </tr>
                       </tbody>
@@ -877,7 +947,7 @@ function onImgError(e) {
               ]},
               { title: 'Stok & Satış', color: 'text-amber-400', border: 'border-amber-500', terms: [
                 { k: 'Sell Through', d: 'Satış Oranı (Satış / [Satış + Stok]).' },
-                { k: 'Periyot Cover', d: 'Mevcut stoğun kaç hafta yeteceği (Stok / Satış × 19).' },
+                { k: 'Cover', d: 'Mevcut stoğun kaç hafta yeteceği (Stok / Satış).' },
                 { k: 'DBS / DSS', d: 'Dönem başı stok / Dönem sonu stok adedi.' }
               ]},
               { title: 'Sınıflandırma', color: 'text-purple-400', border: 'border-purple-500', terms: [
