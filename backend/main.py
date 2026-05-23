@@ -248,8 +248,6 @@ def _apply_kpi_rules(out: pd.DataFrame, vat_rate: float | None = VAT_DEFAULT) ->
 
     # ── Brüt Ciro: PSF varsa Price×Qty (iskontosuz), yoksa Satış Tutarı ──
     brut_ciro = (qty * psf).where(psf.notna(), other=ciro_net)
-    # Hesaplamalarda kullanılacak ciro = Brüt Ciro (iskontosuz)
-    ciro = brut_ciro
 
     # Toplam SMM = sabit birim maliyet × satış adedi
     toplam_smm = qty * alis
@@ -262,13 +260,12 @@ def _apply_kpi_rules(out: pd.DataFrame, vat_rate: float | None = VAT_DEFAULT) ->
     # İndirim Oranı = 1 − (Net Ciro / Brüt Ciro) — PSF yoksa NA
     out["indirim_orani"] = (1 - ciro_net.div(brut_ciro.replace(0, pd.NA))).where(psf.notna(), other=pd.NA)
 
-    out["brut_kar"] = ciro - toplam_smm.fillna(0)
+    # UYUM İÇİN DÜZELTME: Kar hesaplamaları Net Ciro (Satış Tutarı) üzerinden yapılmalıdır.
+    out["brut_kar"] = ciro_net - toplam_smm.fillna(0)
+    out["toplam_kar"] = ciro_net - toplam_smm.fillna(0)
 
-    # Toplam Kar = Brüt Ciro − Toplam Maliyet (Sabit Birim Maliyet × Satış Adedi)
-    out["toplam_kar"] = ciro - toplam_smm.fillna(0)
-
-    # MU (mark-up çarpanı) = Brüt Ciro / Toplam SMM
-    out["mu"] = ciro.div(toplam_smm.replace(0, pd.NA))
+    # MU (mark-up çarpanı) = Brüt Ciro / Toplam SMM (Retail'de MU genellikle iskontosuz liste fiyatı üzerinden alınır)
+    out["mu"] = brut_ciro.div(toplam_smm.replace(0, pd.NA))
 
     # Sell Through % = Satış / (Satış + DSS) × 100
     out["sell_through_pct"] = qty.div((qty + dss).replace(0, pd.NA)) * 100
@@ -276,8 +273,8 @@ def _apply_kpi_rules(out: pd.DataFrame, vat_rate: float | None = VAT_DEFAULT) ->
     # 0 satışlı ürünlerde Cover = 1000 (referans Excel standardı)
     out.loc[qty == 0, "periyot_cover_19"] = 1000
 
-    # Kar Marjı % = (Brüt Kar / Ciro) × 100 — Word tanımına uygun
-    out["kar_marji_pct"] = out["brut_kar"].div(ciro.replace(0, pd.NA)) * 100
+    # Kar Marjı % = (Brüt Kar / Net Ciro) × 100
+    out["kar_marji_pct"] = out["brut_kar"].div(ciro_net.replace(0, pd.NA)) * 100
 
     # GMROI (opsiyonel klasik tanım): Ortalama Stok × birim alışa göre yıllıklaştırma
     if "Ortalama Stok" in out.columns:
@@ -314,6 +311,19 @@ def _process_summary_export(df: pd.DataFrame) -> pd.DataFrame:
     base["birim_alis_fiyati"] = _to_numeric_series(df["Alış Fiyat"]).astype(float)
     base["psf"] = _to_numeric_series(df["PSF"]).astype(float)
 
+    # Bestseller/Worstseller endpoint'lerinin ihtiyaç duyduğu ek sütunlar
+    for opt_col in ["E-TİCARET RENK", "Renk Açıklama", "E-TİCARET CİNSİYET", "E-TİCARET MEVSİM"]:
+        if opt_col in df.columns:
+            base[opt_col] = df[opt_col].map(_txt_clean)
+        else:
+            base[opt_col] = ""
+
+    if "Mevcut Sezon Kodu" in df.columns:
+        base["Mevcut Sezon Kodu"] = df["Mevcut Sezon Kodu"].map(_txt_clean)
+    elif "İlk Sezon Kodu" in df.columns:
+        base["Mevcut Sezon Kodu"] = df["İlk Sezon Kodu"].map(_txt_clean)
+    else:
+        base["Mevcut Sezon Kodu"] = ""
 
     base["Ortalama Stok"] = pd.NA
     if "Periyot Cover (19 hafta)" in df.columns:
@@ -651,10 +661,11 @@ def _resolve_any_image(sku: str, size: int = 300) -> str | None:
             pass
     # 0) Raw URL from data file (most authoritative Sporthink URL)
     raw_url = _sku_raw_url_cache.get(key)
-    if raw_url and raw_url.startswith("http"):
-        if _http_exists(raw_url):
-            _img_resolve_cache[key] = raw_url
-            return raw_url
+    if raw_url and raw_url.startswith("http") and str(raw_url).strip() not in {"0", "nan", "none", ""}:
+        # Fix broken CDN domain from Excel
+        raw_url = raw_url.replace("sporthink.mncdn.com", "sporthink.sm.mncdn.com")
+        _img_resolve_cache[key] = raw_url
+        return raw_url
     # 1) Hardcoded internal ID map
     if key in _GORSEL_ID_MAP:
         url = f"https://sporthink.sm.mncdn.com/mnresize/{size}/{size}/sporthink/uploads/products/original_{_GORSEL_ID_MAP[key]}_1.jpeg"
@@ -728,7 +739,9 @@ def _load_raw_image_links() -> dict[str, str]:
         if path.suffix.lower() == ".csv":
             raw = pd.read_csv(path)
         else:
-            raw = pd.read_excel(path)
+            xls = pd.ExcelFile(path, engine="openpyxl")
+            target_sheet = "Data" if "Data" in xls.sheet_names else 0
+            raw = pd.read_excel(xls, sheet_name=target_sheet)
     except Exception:
         return mapping
     sku_col = None
@@ -1061,7 +1074,13 @@ def _load_and_process() -> tuple[pd.DataFrame, str]:
         except UnicodeDecodeError:
             df = pd.read_csv(path, encoding="latin-1")
     elif suffix in (".xlsx", ".xlsm"):
-        df = pd.read_excel(path, engine="openpyxl", dtype={"Stok Kodu": str, "E-TİCARET RENK": str})
+        # Veritabanında (Excel'de) birden fazla sayfa olabilir. Asıl veriler genellikle 'Data' sayfasındadır.
+        try:
+            xls = pd.ExcelFile(path, engine="openpyxl")
+            target_sheet = "Data" if "Data" in xls.sheet_names else 0
+            df = pd.read_excel(xls, sheet_name=target_sheet, dtype={"Stok Kodu": str, "E-TİCARET RENK": str})
+        except Exception:
+            df = pd.read_excel(path, engine="openpyxl", dtype={"Stok Kodu": str, "E-TİCARET RENK": str})
     else:
         raise HTTPException(
             status_code=400,
@@ -1139,7 +1158,12 @@ def _load_and_process() -> tuple[pd.DataFrame, str]:
         out.loc[out['_zero_stock_flag'] == True, 'sell_through_pct'] = 0.0
         out = out.drop(columns=['_zero_stock_flag'])
 
-    out["gorsel_link"] = ""
+    # gorsel_link: _process_summary_export zaten Excel'den kopyalar.
+    # Ham veriler (transactional) için apply_category_mappings içinde _get_gorsel_link çağrılır.
+    # Burada sıfırlama YOK — mevcut değerler korunur.
+    if "gorsel_link" not in out.columns:
+        out["gorsel_link"] = ""
+
     
     _cache["path"] = path
     _cache["mtime"] = mtime
@@ -1158,11 +1182,33 @@ def dashboard(
     renk: str | None = Query(None, description="E-TİCARET RENK filtresi; boş = tümü"),
 ):
     metrics, data_filename = _load_and_process()
+    metrics = _apply_category_mappings(metrics)
 
-    cinsiyet_opt = sorted(
-        metrics["CİNSİYET"].dropna().unique().tolist(),
-        key=lambda x: str(x),
-    )
+    result: dict = {"meta": {"data_file": data_filename}}
+
+    if view in ("all", "best"):
+        bs_data = get_bestsellers(
+            metrics,
+            cinsiyet=cinsiyet,
+            anagrup=anagrup,
+            alt_kategori=alt_kategori,
+            renk=renk,
+        )
+        result["bestsellers"] = bs_data["items"]
+        result["best_filters"] = bs_data["filters"]
+
+    if view in ("all", "worst"):
+        ws_data = get_worstsellers(
+            metrics,
+            cinsiyet=cinsiyet,
+            anagrup=anagrup,
+            alt_kategori=alt_kategori,
+            renk=renk,
+        )
+        result["worstsellers"] = ws_data["items"]
+        result["worst_filters"] = ws_data["filters"]
+
+    return result
 
 def _apply_category_mappings(df: pd.DataFrame) -> pd.DataFrame:
     """Alt Kategori'den Ürün Grubu ve Ana Kategori türetir."""

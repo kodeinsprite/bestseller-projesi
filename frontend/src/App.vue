@@ -236,10 +236,13 @@ function onImgError(e) {
     <aside class="hidden w-64 shrink-0 flex-col border-r py-6 px-5 lg:flex transition-colors duration-500" :class="isDarkMode ? 'border-white/10 bg-[#070a12]' : 'border-slate-200 bg-white shadow-sm'">
       <div class="mb-6">
         <!-- Sporthink Logo -->
-        <img src="/sporthink-logo.png" alt="Sporthink" class="h-20 w-auto object-contain transition-all duration-300 -ml-1"
-          :style="isDarkMode ? 'filter: brightness(0) invert(1)' : ''" />
-        <p class="text-[10px] font-bold uppercase tracking-[0.2em] leading-none -mt-0.5" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">B&amp;W Seller</p>
+        <div class="mb-1 flex items-center">
+          <img src="/sporthink-logo.png" alt="Sporthink" class="h-14 w-auto object-contain transition-all duration-300"
+            :style="isDarkMode ? 'filter: drop-shadow(0 0 6px rgba(255,255,255,0.08))' : ''" />
+        </div>
+        <p class="text-[10px] font-bold uppercase tracking-[0.2em] leading-none" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">B&amp;W Seller</p>
         <p class="text-lg font-bold tracking-tight leading-snug" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Dashboard</p>
+
       </div>
       <nav class="flex flex-col gap-2 text-sm">
         <button 
@@ -372,290 +375,223 @@ function onImgError(e) {
 
             <template v-else-if="analyticsData">
 
-              <!-- KPI Cards -->
-              <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+              <!-- KPI Cards - Sleeker, unified look -->
+              <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6 mb-2">
                 <div v-for="card in [
-                  { label: 'Toplam Satış', value: formatNum(analyticsData.summary.total_satis), sub: 'adet', grad: 'from-sky-600/20 to-sky-900/10', border: isDarkMode ? 'border-sky-500/20' : 'border-sky-200', accent: isDarkMode ? 'text-sky-400' : 'text-sky-600', dot: 'bg-sky-500' },
-                  { label: 'Toplam Ciro', value: formatMoney(analyticsData.summary.total_ciro), sub: '', grad: 'from-emerald-600/20 to-emerald-900/10', border: isDarkMode ? 'border-emerald-500/20' : 'border-emerald-200', accent: isDarkMode ? 'text-emerald-400' : 'text-emerald-600', dot: 'bg-emerald-500' },
-                  { label: 'Toplam Kar', value: formatMoney(analyticsData.summary.total_kar), sub: '', grad: 'from-amber-600/20 to-amber-900/10', border: isDarkMode ? 'border-amber-500/20' : 'border-amber-200', accent: isDarkMode ? 'text-amber-400' : 'text-amber-600', dot: 'bg-amber-500' },
-                  { label: 'Ort. Satış Oranı', value: formatPct(analyticsData.summary.avg_st_pct), sub: '', grad: 'from-violet-600/20 to-violet-900/10', border: isDarkMode ? 'border-violet-500/20' : 'border-violet-200', accent: isDarkMode ? 'text-violet-400' : 'text-violet-600', dot: 'bg-violet-500' },
-                  { label: 'Dönem Sonu Stok', value: formatNum(analyticsData.summary.toplam_dss), sub: 'adet', grad: 'from-rose-600/20 to-rose-900/10', border: isDarkMode ? 'border-rose-500/20' : 'border-rose-200', accent: isDarkMode ? 'text-rose-400' : 'text-rose-600', dot: 'bg-rose-500' },
-                  { label: 'Benzersiz Ürün', value: formatNum(analyticsData.summary.toplam_sku), sub: 'ürün', grad: 'from-slate-600/20 to-slate-900/10', border: isDarkMode ? 'border-white/10' : 'border-slate-200', accent: isDarkMode ? 'text-slate-300' : 'text-slate-600', dot: 'bg-slate-400' },
+                  { label: 'Toplam Satış', value: formatNum(analyticsData.summary.total_satis), sub: 'adet satıldı', icon: '📦', bg: isDarkMode ? 'bg-[#131b2c] hover:bg-[#1a233a]' : 'bg-white hover:bg-slate-50', border: isDarkMode ? 'border-sky-500/30' : 'border-sky-200', accent: isDarkMode ? 'text-sky-400' : 'text-sky-600' },
+                  { label: 'Toplam Ciro', value: formatMoney(analyticsData.summary.total_ciro), sub: 'net ciro', icon: '💰', bg: isDarkMode ? 'bg-[#131b2c] hover:bg-[#1a233a]' : 'bg-white hover:bg-slate-50', border: isDarkMode ? 'border-emerald-500/30' : 'border-emerald-200', accent: isDarkMode ? 'text-emerald-400' : 'text-emerald-600' },
+                  { label: 'Toplam Kar', value: formatMoney(analyticsData.summary.total_kar), sub: 'net kar', icon: '📈', bg: isDarkMode ? 'bg-[#131b2c] hover:bg-[#1a233a]' : 'bg-white hover:bg-slate-50', border: isDarkMode ? 'border-amber-500/30' : 'border-amber-200', accent: isDarkMode ? 'text-amber-400' : 'text-amber-600' },
+                  { label: 'Ort. Satış Oranı', value: formatPct(analyticsData.summary.avg_st_pct), sub: 'sell-through', icon: '🎯', bg: isDarkMode ? 'bg-[#131b2c] hover:bg-[#1a233a]' : 'bg-white hover:bg-slate-50', border: isDarkMode ? 'border-violet-500/30' : 'border-violet-200', accent: isDarkMode ? 'text-violet-400' : 'text-violet-600' },
+                  { label: 'Dönem Sonu Stok', value: formatNum(analyticsData.summary.toplam_dss), sub: 'adet stokta', icon: '🏢', bg: isDarkMode ? 'bg-[#131b2c] hover:bg-[#1a233a]' : 'bg-white hover:bg-slate-50', border: isDarkMode ? 'border-rose-500/30' : 'border-rose-200', accent: isDarkMode ? 'text-rose-400' : 'text-rose-600' },
+                  { label: 'Aktif Ürün', value: formatNum(analyticsData.summary.toplam_sku), sub: 'çeşit (SKU)', icon: '🏷️', bg: isDarkMode ? 'bg-[#131b2c] hover:bg-[#1a233a]' : 'bg-white hover:bg-slate-50', border: isDarkMode ? 'border-slate-500/30' : 'border-slate-200', accent: isDarkMode ? 'text-slate-300' : 'text-slate-700' },
                 ]" :key="card.label"
-                  class="relative overflow-hidden rounded-2xl border p-4 bg-gradient-to-br transition-all duration-300 hover:scale-[1.02]"
-                  :class="[card.border, card.grad]">
-                  <div class="absolute top-3 right-3 h-1.5 w-1.5 rounded-full" :class="card.dot"></div>
-                  <p class="text-[10px] font-bold uppercase tracking-wider mb-2.5" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">{{ card.label }}</p>
-                  <p class="text-base font-bold leading-none break-all" :class="card.accent">{{ card.value }}</p>
-                  <p v-if="card.sub" class="text-[10px] mt-1.5 font-medium" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">{{ card.sub }}</p>
+                  class="relative flex flex-col rounded-2xl border p-5 transition-all duration-300 shadow-sm"
+                  :class="[card.bg, card.border]">
+                  <div class="flex items-start justify-between mb-4">
+                    <p class="text-[10px] font-bold uppercase tracking-widest opacity-80" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">{{ card.label }}</p>
+                    <span class="text-lg opacity-80">{{ card.icon }}</span>
+                  </div>
+                  <div class="mt-auto">
+                    <p class="text-xl font-bold tracking-tight break-all" :class="card.accent">{{ card.value }}</p>
+                    <p v-if="card.sub" class="text-[10px] mt-1 font-medium" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">{{ card.sub }}</p>
+                  </div>
                 </div>
               </div>
 
-              <!-- ⭐ Yıldız Ürünler -->
-              <div class="rounded-2xl border p-5 space-y-4" :class="isDarkMode ? 'border-amber-500/20 bg-gradient-to-br from-amber-900/10 to-transparent' : 'border-amber-200 bg-amber-50/40'">
-                <div class="flex items-center gap-2">
-                  <span class="text-lg">⭐</span>
-                  <div>
-                    <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-amber-300' : 'text-amber-700'">Yıldız Ürünler</h3>
-                    <p class="text-[10px] uppercase tracking-wider font-semibold" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">En Yüksek Sell-Through — Top 8</p>
+              <!-- Highlights Grid: Stars & Risks side by side -->
+              <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-2">
+                <!-- ⭐ Yıldız Ürünler -->
+                <div class="rounded-2xl border p-6 flex flex-col shadow-sm" :class="isDarkMode ? 'border-amber-500/20 bg-gradient-to-br from-amber-900/10 to-transparent' : 'border-amber-200 bg-amber-50/40'">
+                  <div class="flex items-center gap-3 mb-5 pb-4 border-b" :class="isDarkMode ? 'border-white/5' : 'border-amber-100'">
+                    <div class="h-10 w-10 rounded-xl flex items-center justify-center text-xl bg-amber-500/20 text-amber-500">⭐</div>
+                    <div>
+                      <h3 class="font-bold text-base" :class="isDarkMode ? 'text-amber-400' : 'text-amber-700'">Yıldız Performanslar</h3>
+                      <p class="text-[10px] uppercase tracking-wider font-semibold mt-0.5" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">En Yüksek Satış Oranı (Top 8)</p>
+                    </div>
                   </div>
-                </div>
-                <div class="flex gap-3 overflow-x-auto pb-2 snap-x">
-                  <div v-for="(p, i) in analyticsData.top_products" :key="p.stok_kodu"
-                    class="snap-start shrink-0 w-40 rounded-xl border p-3 space-y-2 transition hover:scale-[1.03] cursor-pointer"
-                    :class="isDarkMode ? 'border-white/8 bg-[#0f141f]/80 hover:border-amber-500/40' : 'border-slate-200 bg-white hover:border-amber-400'">
-                    <div class="relative">
-                      <div class="h-28 w-full rounded-lg bg-white overflow-hidden flex items-center justify-center">
-                        <img :src="imgUrl(p.gorsel_link)" @error="onStarImgError" class="h-full w-full object-contain" :alt="p.stok_aciklama" />
-                      </div>
-                      <span class="absolute top-1.5 left-1.5 h-5 w-5 rounded-full flex items-center justify-center text-[9px] font-black shadow"
-                        :class="i === 0 ? 'bg-amber-400 text-amber-900' : i === 1 ? 'bg-slate-300 text-slate-700' : i === 2 ? 'bg-amber-700 text-amber-100' : (isDarkMode ? 'bg-white/10 text-slate-400' : 'bg-slate-100 text-slate-500')">
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div v-for="(p, i) in analyticsData.top_products.slice(0, 4)" :key="p.stok_kodu"
+                      class="relative rounded-xl border p-3 flex flex-col transition hover:scale-[1.02] cursor-pointer"
+                      :class="isDarkMode ? 'border-white/10 bg-[#0b0f19] hover:border-amber-500/50' : 'border-slate-200 bg-white hover:border-amber-400'">
+                      <span class="absolute -top-2 -left-2 h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-black shadow-md z-10"
+                        :class="i === 0 ? 'bg-amber-400 text-amber-950' : i === 1 ? 'bg-slate-300 text-slate-800' : i === 2 ? 'bg-amber-700 text-amber-100' : (isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600')">
                         {{ i + 1 }}
                       </span>
-                    </div>
-                    <div class="space-y-1">
-                      <p class="text-[10px] font-mono font-bold leading-none" :class="isDarkMode ? 'text-sky-400' : 'text-sky-600'">{{ p.stok_kodu }}</p>
-                      <p class="text-[10px] font-medium leading-tight line-clamp-2 min-h-[24px]" :class="isDarkMode ? 'text-slate-300' : 'text-slate-700'">{{ p.stok_aciklama || p.marka }}</p>
-                      <!-- Metrics grid -->
-                      <div class="grid grid-cols-2 gap-1 pt-1.5 border-t" :class="isDarkMode ? 'border-white/5' : 'border-slate-100'">
-                        <div>
-                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Satış</p>
-                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-slate-200' : 'text-slate-800'">{{ formatNum(p.satis) }}</p>
-                        </div>
-                        <div>
-                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Sat. Oranı</p>
-                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-emerald-400' : 'text-emerald-600'">%{{ p.st_pct }}</p>
-                        </div>
-                        <div>
-                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">GMROI</p>
-                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-violet-300' : 'text-violet-600'">{{ formatGmroi(p.gmroi) }}</p>
-                        </div>
-                        <div>
-                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Kar</p>
-                          <p class="text-[10px] font-bold tabular-nums truncate" :class="isDarkMode ? 'text-amber-300' : 'text-amber-600'">{{ formatMoney(p.kar) }}</p>
-                        </div>
+                      <div class="h-24 w-full rounded-lg bg-white overflow-hidden mb-3">
+                        <img :src="imgUrl(p.gorsel_link)" @error="onStarImgError" class="h-full w-full object-contain p-1" :alt="p.stok_aciklama" />
                       </div>
+                      <p class="text-[10px] font-mono font-bold truncate" :class="isDarkMode ? 'text-amber-400' : 'text-amber-600'">{{ p.stok_kodu }}</p>
+                      <p class="text-[10px] font-bold mt-1" :class="isDarkMode ? 'text-emerald-400' : 'text-emerald-600'">ST: %{{ p.st_pct }}</p>
+                      <p class="text-[9px] font-medium truncate mt-0.5" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">Satış: {{ formatNum(p.satis) }}</p>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- ⚠️ Risk Ürünleri (Worstseller) -->
-              <div v-if="analyticsData.worst_products && analyticsData.worst_products.length" class="rounded-2xl border p-5 space-y-4" :class="isDarkMode ? 'border-rose-500/20 bg-gradient-to-br from-rose-900/10 to-transparent' : 'border-rose-200 bg-rose-50/40'">
-                <div class="flex items-center gap-2">
-                  <span class="text-lg">⚠️</span>
-                  <div>
-                    <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-rose-300' : 'text-rose-700'">Risk Ürünleri</h3>
-                    <p class="text-[10px] uppercase tracking-wider font-semibold" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">En Düşük Sell-Through — Yüksek Stok Riski</p>
+                <!-- ⚠️ Risk Ürünleri -->
+                <div class="rounded-2xl border p-6 flex flex-col shadow-sm" :class="isDarkMode ? 'border-rose-500/20 bg-gradient-to-br from-rose-900/10 to-transparent' : 'border-rose-200 bg-rose-50/40'">
+                  <div class="flex items-center gap-3 mb-5 pb-4 border-b" :class="isDarkMode ? 'border-white/5' : 'border-rose-100'">
+                    <div class="h-10 w-10 rounded-xl flex items-center justify-center text-xl bg-rose-500/20 text-rose-500">⚠️</div>
+                    <div>
+                      <h3 class="font-bold text-base" :class="isDarkMode ? 'text-rose-400' : 'text-rose-700'">Stok Riskleri</h3>
+                      <p class="text-[10px] uppercase tracking-wider font-semibold mt-0.5" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">Düşük Satış, Yüksek Stok (Top 8)</p>
+                    </div>
                   </div>
-                </div>
-                <div class="flex gap-3 overflow-x-auto pb-2 snap-x">
-                  <div v-for="(p, i) in analyticsData.worst_products" :key="p.stok_kodu"
-                    class="snap-start shrink-0 w-40 rounded-xl border p-3 space-y-2 transition hover:scale-[1.03] cursor-pointer"
-                    :class="isDarkMode ? 'border-white/8 bg-[#0f141f]/80 hover:border-rose-500/40' : 'border-slate-200 bg-white hover:border-rose-400'">
-                    <div class="relative">
-                      <div class="h-28 w-full rounded-lg bg-white overflow-hidden flex items-center justify-center">
-                        <img :src="imgUrl(p.gorsel_link)" @error="onStarImgError" class="h-full w-full object-contain" :alt="p.stok_aciklama" />
-                      </div>
-                      <span class="absolute top-1.5 left-1.5 h-5 w-5 rounded-full flex items-center justify-center text-[9px] font-black shadow"
-                        :class="isDarkMode ? 'bg-rose-500/80 text-white' : 'bg-rose-500 text-white'">
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div v-for="(p, i) in (analyticsData.worst_products || []).slice(0, 4)" :key="p.stok_kodu"
+                      class="relative rounded-xl border p-3 flex flex-col transition hover:scale-[1.02] cursor-pointer"
+                      :class="isDarkMode ? 'border-white/10 bg-[#0b0f19] hover:border-rose-500/50' : 'border-slate-200 bg-white hover:border-rose-400'">
+                      <span class="absolute -top-2 -left-2 h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-black shadow-md z-10"
+                        :class="isDarkMode ? 'bg-rose-500 text-white' : 'bg-rose-600 text-white'">
                         {{ i + 1 }}
                       </span>
-                    </div>
-                    <div class="space-y-1">
-                      <p class="text-[10px] font-mono font-bold leading-none" :class="isDarkMode ? 'text-sky-400' : 'text-sky-600'">{{ p.stok_kodu }}</p>
-                      <p class="text-[10px] font-medium leading-tight line-clamp-2 min-h-[24px]" :class="isDarkMode ? 'text-slate-300' : 'text-slate-700'">{{ p.stok_aciklama || p.marka }}</p>
-                      <div class="grid grid-cols-2 gap-1 pt-1.5 border-t" :class="isDarkMode ? 'border-white/5' : 'border-slate-100'">
-                        <div>
-                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Satış</p>
-                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-slate-200' : 'text-slate-800'">{{ formatNum(p.satis) }}</p>
-                        </div>
-                        <div>
-                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Stok</p>
-                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-rose-300' : 'text-rose-600'">{{ formatNum(p.dss) }}</p>
-                        </div>
-                        <div>
-                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Sat. Oranı</p>
-                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-rose-300' : 'text-rose-600'">%{{ p.st_pct }}</p>
-                        </div>
-                        <div>
-                          <p class="text-[8px] uppercase tracking-wider font-bold" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">GMROI</p>
-                          <p class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-violet-300' : 'text-violet-600'">{{ formatGmroi(p.gmroi) }}</p>
-                        </div>
+                      <div class="h-24 w-full rounded-lg bg-white overflow-hidden mb-3">
+                        <img :src="imgUrl(p.gorsel_link)" @error="onStarImgError" class="h-full w-full object-contain p-1" :alt="p.stok_aciklama" />
                       </div>
+                      <p class="text-[10px] font-mono font-bold truncate" :class="isDarkMode ? 'text-rose-400' : 'text-rose-600'">{{ p.stok_kodu }}</p>
+                      <p class="text-[10px] font-bold mt-1" :class="isDarkMode ? 'text-rose-400' : 'text-rose-600'">Stok: {{ formatNum(p.dss) }}</p>
+                      <p class="text-[9px] font-medium truncate mt-0.5" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">ST: %{{ p.st_pct }}</p>
+                    </div>
+                    <div v-if="!analyticsData.worst_products || !analyticsData.worst_products.length" class="col-span-4 py-8 text-center text-xs opacity-60">
+                      Riskli ürün bulunamadı.
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Brand + Category Charts -->
-              <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
-
-                <!-- Marka Analizi -->
-                <div class="rounded-2xl border p-5 space-y-4" :class="isDarkMode ? 'border-white/8 bg-[#0e1320]' : 'border-slate-200 bg-white'">
-                  <div class="flex items-baseline justify-between">
-                    <div>
-                      <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Marka Sıralaması</h3>
-                      <p class="text-[10px] mt-0.5 uppercase tracking-wider" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">{{ metricLabel }} · Top 15</p>
-                    </div>
-                    <span class="text-[10px] font-bold rounded-full px-2 py-0.5" :class="isDarkMode ? 'bg-violet-500/15 text-violet-400' : 'bg-violet-50 text-violet-600'">{{ sortedBrands.length }} marka</span>
+              <!-- Breakdown Charts Grid: 4 columns -->
+              <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-2">
+                <!-- Marka -->
+                <div class="rounded-2xl border p-5 flex flex-col" :class="isDarkMode ? 'border-white/10 bg-[#101524]' : 'border-slate-200 bg-white'">
+                  <div class="mb-4">
+                    <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Markalar</h3>
+                    <p class="text-[10px] uppercase tracking-wider mt-1" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">{{ metricLabel }} Dağılımı</p>
                   </div>
-                  <div class="space-y-2.5">
-                    <div v-for="(row, idx) in sortedBrands" :key="row.label">
+                  <div class="space-y-3 flex-1 overflow-y-auto max-h-[220px] pr-2">
+                    <div v-for="(row, idx) in sortedBrands.slice(0, 8)" :key="row.label">
                       <div class="flex items-center justify-between mb-1">
-                        <div class="flex items-center gap-2 min-w-0">
-                          <span class="text-[9px] font-black w-4 text-right shrink-0" :class="idx < 3 ? (isDarkMode ? 'text-violet-400' : 'text-violet-500') : (isDarkMode ? 'text-slate-600' : 'text-slate-400')">{{ idx + 1 }}</span>
-                          <span class="text-xs font-semibold truncate" :class="isDarkMode ? 'text-slate-200' : 'text-slate-700'">{{ row.label }}</span>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0 ml-2">
-                          <span class="text-[9px]" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">{{ row.sku_count }} ürün</span>
-                          <span class="text-[11px] font-bold tabular-nums min-w-[70px] text-right" :class="isDarkMode ? 'text-violet-300' : 'text-violet-700'">{{ mFmt(row) }}</span>
-                        </div>
+                        <span class="text-xs font-semibold truncate max-w-[60%]" :class="isDarkMode ? 'text-slate-200' : 'text-slate-700'">{{ idx+1 }}. {{ row.label }}</span>
+                        <span class="text-xs font-bold tabular-nums" :class="isDarkMode ? 'text-violet-300' : 'text-violet-700'">{{ mFmt(row) }}</span>
                       </div>
-                      <div class="h-1.5 w-full rounded-full" :class="isDarkMode ? 'bg-white/5' : 'bg-slate-100'">
-                        <div class="h-full rounded-full transition-all duration-700 ease-out"
-                          :style="{ width: barW(mVal(row), sortedBrands) + '%' }"
-                          :class="idx === 0 ? 'bg-gradient-to-r from-violet-500 to-violet-300' : idx < 3 ? 'bg-gradient-to-r from-violet-600/80 to-violet-400/80' : (isDarkMode ? 'bg-violet-700/50' : 'bg-violet-300/70')">
-                        </div>
+                      <div class="h-1.5 w-full rounded-full" :class="isDarkMode ? 'bg-white/10' : 'bg-slate-100'">
+                        <div class="h-full rounded-full transition-all duration-700" :style="{ width: barW(mVal(row), sortedBrands) + '%' }" :class="isDarkMode ? 'bg-violet-500' : 'bg-violet-500'"></div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <!-- Kategori Analizi -->
-                <div class="rounded-2xl border p-5 space-y-4" :class="isDarkMode ? 'border-white/8 bg-[#0e1320]' : 'border-slate-200 bg-white'">
-                  <div class="flex items-baseline justify-between">
-                    <div>
-                      <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Ürün Grubu Sıralaması</h3>
-                      <p class="text-[10px] mt-0.5 uppercase tracking-wider" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">{{ metricLabel }} · Alt Kategoriler</p>
-                    </div>
-                    <span class="text-[10px] font-bold rounded-full px-2 py-0.5" :class="isDarkMode ? 'bg-sky-500/15 text-sky-400' : 'bg-sky-50 text-sky-600'">{{ sortedKategori.length }} grup</span>
+                <!-- Kategori -->
+                <div class="rounded-2xl border p-5 flex flex-col" :class="isDarkMode ? 'border-white/10 bg-[#101524]' : 'border-slate-200 bg-white'">
+                  <div class="mb-4">
+                    <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Ürün Grupları</h3>
+                    <p class="text-[10px] uppercase tracking-wider mt-1" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">{{ metricLabel }} Dağılımı</p>
                   </div>
-                  <div class="space-y-2.5">
-                    <div v-for="(row, idx) in sortedKategori" :key="row.label">
+                  <div class="space-y-3 flex-1 overflow-y-auto max-h-[220px] pr-2">
+                    <div v-for="(row, idx) in sortedKategori.slice(0, 8)" :key="row.label">
                       <div class="flex items-center justify-between mb-1">
-                        <div class="flex items-center gap-2 min-w-0">
-                          <span class="text-[9px] font-black w-4 text-right shrink-0" :class="idx < 3 ? (isDarkMode ? 'text-sky-400' : 'text-sky-500') : (isDarkMode ? 'text-slate-600' : 'text-slate-400')">{{ idx + 1 }}</span>
-                          <span class="text-xs font-semibold truncate" :class="isDarkMode ? 'text-slate-200' : 'text-slate-700'">{{ row.label }}</span>
-                        </div>
-                        <div class="flex items-center gap-2 shrink-0 ml-2">
-                          <span class="text-[9px]" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">{{ row.sku_count }} ürün</span>
-                          <span class="text-[11px] font-bold tabular-nums min-w-[70px] text-right" :class="isDarkMode ? 'text-sky-300' : 'text-sky-700'">{{ mFmt(row) }}</span>
-                        </div>
+                        <span class="text-xs font-semibold truncate max-w-[60%]" :class="isDarkMode ? 'text-slate-200' : 'text-slate-700'">{{ idx+1 }}. {{ row.label }}</span>
+                        <span class="text-xs font-bold tabular-nums" :class="isDarkMode ? 'text-sky-300' : 'text-sky-700'">{{ mFmt(row) }}</span>
                       </div>
-                      <div class="h-1.5 w-full rounded-full" :class="isDarkMode ? 'bg-white/5' : 'bg-slate-100'">
-                        <div class="h-full rounded-full transition-all duration-700 ease-out"
-                          :style="{ width: barW(mVal(row), sortedKategori) + '%' }"
-                          :class="idx === 0 ? 'bg-gradient-to-r from-sky-500 to-sky-300' : idx < 3 ? 'bg-gradient-to-r from-sky-600/80 to-sky-400/80' : (isDarkMode ? 'bg-sky-700/50' : 'bg-sky-300/70')">
-                        </div>
+                      <div class="h-1.5 w-full rounded-full" :class="isDarkMode ? 'bg-white/10' : 'bg-slate-100'">
+                        <div class="h-full rounded-full transition-all duration-700" :style="{ width: barW(mVal(row), sortedKategori) + '%' }" :class="isDarkMode ? 'bg-sky-500' : 'bg-sky-500'"></div>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- ST% Distribution + Season + Gender -->
-              <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
-
-                <!-- ST% Histogram -->
-                <div class="rounded-2xl border p-5 space-y-4" :class="isDarkMode ? 'border-white/8 bg-[#0e1320]' : 'border-slate-200 bg-white'">
-                  <div>
-                    <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Sell-Through Dağılımı</h3>
-                    <p class="text-[10px] mt-0.5 uppercase tracking-wider" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">Ürün sayısına göre satış oranı dağılımı</p>
-                  </div>
-                  <div class="relative h-40 flex items-end gap-2">
-                    <div v-for="b in analyticsData.st_distribution" :key="b.label" class="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
-                      <span class="text-[10px] font-bold tabular-nums" :class="isDarkMode ? 'text-slate-400' : 'text-slate-600'">{{ b.count }}</span>
-                      <div class="w-full rounded-t-lg transition-all duration-700 ease-out min-h-[4px]"
-                        :style="{ height: Math.max(4, Math.round((b.count / Math.max(...analyticsData.st_distribution.map(x=>x.count))) * 110)) + 'px' }"
-                        :class="b.label.includes('Satışsız')
-                          ? (isDarkMode ? 'bg-gradient-to-t from-rose-700 to-rose-500' : 'bg-gradient-to-t from-rose-600 to-rose-400')
-                          : (isDarkMode ? 'bg-gradient-to-t from-emerald-700 to-emerald-500' : 'bg-gradient-to-t from-emerald-600 to-emerald-400')">
-                      </div>
-                      <span class="text-[9px] font-medium text-center leading-tight" :class="isDarkMode ? 'text-slate-500' : 'text-slate-500'">{{ b.label }}</span>
                     </div>
                   </div>
                 </div>
 
                 <!-- Sezon -->
-                <div class="rounded-2xl border p-5 space-y-4" :class="isDarkMode ? 'border-white/8 bg-[#0e1320]' : 'border-slate-200 bg-white'">
-                  <div>
-                    <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Sezon Karşılaştırması</h3>
-                    <p class="text-[10px] mt-0.5 uppercase tracking-wider" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">{{ metricLabel }}</p>
+                <div class="rounded-2xl border p-5 flex flex-col" :class="isDarkMode ? 'border-white/10 bg-[#101524]' : 'border-slate-200 bg-white'">
+                  <div class="mb-4">
+                    <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Sezonlar</h3>
+                    <p class="text-[10px] uppercase tracking-wider mt-1" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">{{ metricLabel }} Dağılımı</p>
                   </div>
-                  <div class="space-y-3">
-                    <div v-for="(row, idx) in sortedSezon" :key="row.label">
+                  <div class="space-y-3 flex-1 overflow-y-auto max-h-[220px] pr-2">
+                    <div v-for="(row, idx) in sortedSezon.slice(0, 8)" :key="row.label">
                       <div class="flex items-center justify-between mb-1">
-                        <span class="text-xs font-semibold" :class="isDarkMode ? 'text-slate-200' : 'text-slate-700'">{{ row.label }}</span>
+                        <span class="text-xs font-semibold truncate max-w-[60%]" :class="isDarkMode ? 'text-slate-200' : 'text-slate-700'">{{ row.label }}</span>
                         <span class="text-xs font-bold tabular-nums" :class="isDarkMode ? 'text-amber-300' : 'text-amber-700'">{{ mFmt(row) }}</span>
                       </div>
-                      <div class="h-2 w-full rounded-full" :class="isDarkMode ? 'bg-white/5' : 'bg-slate-100'">
-                        <div class="h-full rounded-full transition-all duration-700 ease-out"
-                          :style="{ width: barW(mVal(row), sortedSezon) + '%' }"
-                          :class="idx === 0 ? 'bg-gradient-to-r from-amber-500 to-amber-300' : (isDarkMode ? 'bg-amber-700/60' : 'bg-amber-300/70')">
-                        </div>
+                      <div class="h-1.5 w-full rounded-full" :class="isDarkMode ? 'bg-white/10' : 'bg-slate-100'">
+                        <div class="h-full rounded-full transition-all duration-700" :style="{ width: barW(mVal(row), sortedSezon) + '%' }" :class="isDarkMode ? 'bg-amber-500' : 'bg-amber-500'"></div>
                       </div>
                     </div>
-                    <p v-if="!sortedSezon.length" class="text-xs italic" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Sezon verisi bulunamadı.</p>
+                    <p v-if="!sortedSezon.length" class="text-xs italic" :class="isDarkMode ? 'text-slate-600' : 'text-slate-400'">Veri yok.</p>
                   </div>
                 </div>
 
                 <!-- Cinsiyet -->
-                <div class="rounded-2xl border p-5 space-y-4" :class="isDarkMode ? 'border-white/8 bg-[#0e1320]' : 'border-slate-200 bg-white'">
-                  <div>
-                    <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Cinsiyet Dağılımı</h3>
-                    <p class="text-[10px] mt-0.5 uppercase tracking-wider" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">{{ metricLabel }}</p>
+                <div class="rounded-2xl border p-5 flex flex-col" :class="isDarkMode ? 'border-white/10 bg-[#101524]' : 'border-slate-200 bg-white'">
+                  <div class="mb-4">
+                    <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Cinsiyet</h3>
+                    <p class="text-[10px] uppercase tracking-wider mt-1" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">{{ metricLabel }} Dağılımı</p>
                   </div>
-                  <div class="space-y-3">
-                    <div v-for="(row, idx) in sortedCinsiyet" :key="row.label">
+                  <div class="space-y-3 flex-1 overflow-y-auto max-h-[220px] pr-2">
+                    <div v-for="(row, idx) in sortedCinsiyet.slice(0, 8)" :key="row.label">
                       <div class="flex items-center justify-between mb-1">
-                        <span class="text-xs font-semibold" :class="isDarkMode ? 'text-slate-200' : 'text-slate-700'">{{ row.label }}</span>
+                        <span class="text-xs font-semibold truncate max-w-[60%]" :class="isDarkMode ? 'text-slate-200' : 'text-slate-700'">{{ row.label }}</span>
                         <span class="text-xs font-bold tabular-nums" :class="isDarkMode ? 'text-pink-300' : 'text-pink-700'">{{ mFmt(row) }}</span>
                       </div>
-                      <div class="h-2 w-full rounded-full" :class="isDarkMode ? 'bg-white/5' : 'bg-slate-100'">
-                        <div class="h-full rounded-full transition-all duration-700 ease-out"
-                          :style="{ width: barW(mVal(row), sortedCinsiyet) + '%' }"
-                          :class="idx === 0 ? 'bg-gradient-to-r from-pink-500 to-pink-300' : (isDarkMode ? 'bg-pink-700/60' : 'bg-pink-300/70')">
-                        </div>
+                      <div class="h-1.5 w-full rounded-full" :class="isDarkMode ? 'bg-white/10' : 'bg-slate-100'">
+                        <div class="h-full rounded-full transition-all duration-700" :style="{ width: barW(mVal(row), sortedCinsiyet) + '%' }" :class="isDarkMode ? 'bg-pink-500' : 'bg-pink-500'"></div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Ana Kategori tablo -->
-              <div class="rounded-2xl border overflow-hidden" :class="isDarkMode ? 'border-white/8' : 'border-slate-200'">
-                <div class="px-5 py-4 border-b" :class="isDarkMode ? 'border-white/5 bg-[#0e1320]' : 'border-slate-100 bg-slate-50'">
-                  <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Ana Kategori Özeti</h3>
-                  <p class="text-[10px] mt-0.5 uppercase tracking-wider" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">Tüm metrikler karşılaştırmalı</p>
+              <!-- Bottom Row: Histogram & Data Table -->
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Histogram -->
+                <div class="rounded-2xl border p-6 flex flex-col shadow-sm" :class="isDarkMode ? 'border-white/10 bg-[#101524]' : 'border-slate-200 bg-white'">
+                  <div class="mb-6">
+                    <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Sell-Through Dağılımı</h3>
+                    <p class="text-[10px] uppercase tracking-wider mt-1" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">Stok sağlığı analizi (Ürün Sayısı)</p>
+                  </div>
+                  <div class="relative h-48 flex items-end gap-3 px-2">
+                    <div v-for="b in analyticsData.st_distribution" :key="b.label" class="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
+                      <span class="text-xs font-bold tabular-nums transition-opacity duration-300 opacity-60 group-hover:opacity-100" :class="isDarkMode ? 'text-slate-300' : 'text-slate-700'">{{ b.count }}</span>
+                      <div class="w-full rounded-t-lg transition-all duration-700 ease-out min-h-[4px]"
+                        :style="{ height: Math.max(4, Math.round((b.count / Math.max(...analyticsData.st_distribution.map(x=>x.count))) * 140)) + 'px' }"
+                        :class="b.label.includes('Satışsız') ? (isDarkMode ? 'bg-rose-500/80' : 'bg-rose-500') : (isDarkMode ? 'bg-emerald-500/80' : 'bg-emerald-500')">
+                      </div>
+                      <span class="text-[9px] font-semibold text-center mt-1" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">{{ b.label }}</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="overflow-x-auto">
-                  <table class="w-full text-xs border-collapse">
-                    <thead>
-                      <tr class="text-[10px] font-bold uppercase tracking-wider border-b" :class="isDarkMode ? 'bg-white/3 text-slate-500 border-white/5' : 'bg-slate-50 text-slate-400 border-slate-200'">
-                        <th class="px-5 py-3 text-left">Ana Kategori</th>
-                        <th class="px-4 py-3 text-right">Ürün Sayısı</th>
-                        <th class="px-4 py-3 text-right">Satış Adedi</th>
-                        <th class="px-4 py-3 text-right">Dönem Sonu Stok</th>
-                        <th class="px-4 py-3 text-right" :class="isDarkMode ? 'text-violet-400' : 'text-violet-600'">Satış Oranı</th>
-                        <th class="px-4 py-3 text-right">Ciro</th>
-                        <th class="px-4 py-3 text-right" :class="isDarkMode ? 'text-emerald-400' : 'text-emerald-600'">Kar</th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y" :class="isDarkMode ? 'divide-white/5' : 'divide-slate-100'">
-                      <tr v-for="row in analyticsData.by_anagrup" :key="row.label"
-                        class="transition-colors duration-150"
-                        :class="isDarkMode ? 'hover:bg-white/3' : 'hover:bg-slate-50/80'">
-                        <td class="px-5 py-3 font-semibold" :class="isDarkMode ? 'text-slate-200' : 'text-slate-800'">{{ row.label }}</td>
-                        <td class="px-4 py-3 text-right tabular-nums" :class="isDarkMode ? 'text-slate-500' : 'text-slate-400'">{{ row.sku_count }}</td>
-                        <td class="px-4 py-3 text-right tabular-nums font-bold" :class="isDarkMode ? 'text-slate-200' : 'text-slate-800'">{{ formatNum(row.satis) }}</td>
-                        <td class="px-4 py-3 text-right tabular-nums" :class="isDarkMode ? 'text-rose-300' : 'text-rose-600'">{{ formatNum(row.dss) }}</td>
-                        <td class="px-4 py-3 text-right tabular-nums font-bold" :class="isDarkMode ? 'text-violet-400' : 'text-violet-600'">{{ formatPct(row.st_pct) }}</td>
-                        <td class="px-4 py-3 text-right tabular-nums" :class="isDarkMode ? 'text-slate-300' : 'text-slate-600'">{{ formatMoney(row.ciro) }}</td>
-                        <td class="px-4 py-3 text-right tabular-nums font-bold" :class="isDarkMode ? 'text-emerald-400' : 'text-emerald-600'">{{ formatMoney(row.kar) }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
+
+                <!-- Table -->
+                <div class="lg:col-span-2 rounded-2xl border overflow-hidden shadow-sm flex flex-col" :class="isDarkMode ? 'border-white/10 bg-[#101524]' : 'border-slate-200 bg-white'">
+                  <div class="px-6 py-5 border-b flex items-center justify-between" :class="isDarkMode ? 'border-white/5' : 'border-slate-100'">
+                    <div>
+                      <h3 class="font-bold text-sm" :class="isDarkMode ? 'text-white' : 'text-slate-900'">Ana Kategori Özeti</h3>
+                      <p class="text-[10px] uppercase tracking-wider mt-1" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">Karşılaştırmalı Performans Tablosu</p>
+                    </div>
+                  </div>
+                  <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-xs border-collapse">
+                      <thead>
+                        <tr class="text-[10px] font-bold uppercase tracking-wider border-b" :class="isDarkMode ? 'bg-white/5 text-slate-400 border-white/5' : 'bg-slate-50 text-slate-500 border-slate-100'">
+                          <th class="px-6 py-4 text-left">Kategori</th>
+                          <th class="px-4 py-4 text-right">SKU</th>
+                          <th class="px-4 py-4 text-right">Satış</th>
+                          <th class="px-4 py-4 text-right" :class="isDarkMode ? 'text-rose-400' : 'text-rose-600'">Stok</th>
+                          <th class="px-4 py-4 text-right" :class="isDarkMode ? 'text-violet-400' : 'text-violet-600'">ST %</th>
+                          <th class="px-4 py-4 text-right">Ciro</th>
+                          <th class="px-4 py-4 text-right" :class="isDarkMode ? 'text-emerald-400' : 'text-emerald-600'">Kar</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y" :class="isDarkMode ? 'divide-white/5' : 'divide-slate-50'">
+                        <tr v-for="row in analyticsData.by_anagrup" :key="row.label" class="transition-colors hover:bg-black/5 dark:hover:bg-white/5">
+                          <td class="px-6 py-3 font-bold" :class="isDarkMode ? 'text-slate-200' : 'text-slate-800'">{{ row.label }}</td>
+                          <td class="px-4 py-3 text-right tabular-nums opacity-70">{{ row.sku_count }}</td>
+                          <td class="px-4 py-3 text-right tabular-nums font-semibold">{{ formatNum(row.satis) }}</td>
+                          <td class="px-4 py-3 text-right tabular-nums font-semibold" :class="isDarkMode ? 'text-rose-300' : 'text-rose-600'">{{ formatNum(row.dss) }}</td>
+                          <td class="px-4 py-3 text-right tabular-nums font-bold" :class="isDarkMode ? 'text-violet-400' : 'text-violet-600'">{{ formatPct(row.st_pct) }}</td>
+                          <td class="px-4 py-3 text-right tabular-nums">{{ formatMoney(row.ciro) }}</td>
+                          <td class="px-4 py-3 text-right tabular-nums font-bold" :class="isDarkMode ? 'text-emerald-400' : 'text-emerald-600'">{{ formatMoney(row.kar) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
 
